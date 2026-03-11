@@ -1,590 +1,885 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>VAMPICHOCO.SYN — INTRO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Vampichoco — Stack builder, data analyst, systems developer. Mexico.">
+<title>VAMPICHOCO — SYS://ONLINE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+:root {
+  --cyan:    #00f5ff;
+  --magenta: #ff00aa;
+  --yellow:  #ffee00;
+  --green:   #00ff88;
+  --bg:      #04040f;
+  --bg2:     #07071a;
+  --dim:     #0d1a2e;
+  --dimtxt:  #1a3344;
+  --txt:     #7aaabb;
+}
 
-  :root {
-    --cyan: #00f5ff;
-    --magenta: #ff00aa;
-    --yellow: #ffee00;
-    --bg: #04040f;
-    --dim: #112233;
-    --dimtxt: #224455;
-  }
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-  * { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
 
-  body {
-    background: var(--bg);
-    color: var(--cyan);
-    font-family: 'Share Tech Mono', monospace;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
+body {
+  background: var(--bg);
+  color: var(--cyan);
+  font-family: 'Share Tech Mono', monospace;
+  overflow-x: hidden;
+  cursor: crosshair;
+}
 
-  body::before {
-    content:'';
-    position:fixed; inset:0;
-    background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.12) 3px, rgba(0,0,0,0.12) 4px);
-    pointer-events:none; z-index:100;
-  }
+/* ── SCANLINES ── */
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:1000;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.1) 3px, rgba(0,0,0,0.1) 4px);
+}
 
-  body::after {
-    content:'';
-    position:fixed; inset:0;
-    background: radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,20,0.7) 100%);
-    pointer-events:none; z-index:99;
-    animation: flicker 5s infinite;
-  }
+/* ── CUSTOM CURSOR DOT ── */
+.cursor-dot {
+  width:6px; height:6px; background:var(--cyan);
+  border-radius:50%; position:fixed; pointer-events:none;
+  z-index:9999; transform:translate(-50%,-50%);
+  box-shadow:0 0 8px var(--cyan);
+  transition:background .1s;
+}
 
-  @keyframes flicker {
-    0%,100%{opacity:1} 88%{opacity:1} 89%{opacity:.75} 90%{opacity:1} 95%{opacity:.88} 96%{opacity:1}
-  }
+/* ── NOISE OVERLAY ── */
+body::after {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:999;
+  background: radial-gradient(ellipse at 50% 0%, rgba(0,245,255,0.03) 0%, transparent 60%);
+}
 
-  .container {
-    width: 720px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-  }
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--dimtxt); }
+::-webkit-scrollbar-thumb:hover { background:var(--cyan); }
 
-  /* ---- BIG TITLE ---- */
-  .big-title {
-    font-family: 'VT323', monospace;
-    font-size: 72px;
-    letter-spacing: 10px;
-    text-align: center;
-    color: var(--cyan);
-    text-shadow:
-      0 0 20px var(--cyan),
-      0 0 50px rgba(0,245,255,0.5),
-      3px 3px 0 var(--magenta),
-      -1px -1px 0 rgba(255,0,170,0.3);
-    animation: glitch 3s infinite;
-    position: relative;
-  }
+/* ═══════════════════════════════════════
+   NAV
+═══════════════════════════════════════ */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:500;
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 14px 40px;
+  background: rgba(4,4,15,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--dim);
+}
 
-  .big-title::before {
-    content: 'VAMPICHOCO.SYN';
-    position: absolute;
-    left: 3px; top: 3px;
-    color: var(--magenta);
-    opacity: 0.4;
-    animation: glitch2 3s infinite;
-    pointer-events: none;
-  }
+.nav-logo {
+  font-family:'VT323',monospace; font-size:26px; letter-spacing:4px;
+  color:var(--cyan); text-shadow:0 0 12px var(--cyan);
+  text-decoration:none;
+}
 
-  .big-title::after {
-    content: 'VAMPICHOCO.SYN';
-    position: absolute;
-    left: -3px; top: -1px;
-    color: #00ff88;
-    opacity: 0.3;
-    animation: glitch3 3s infinite;
-    pointer-events: none;
-  }
+.nav-links { display:flex; gap:28px; list-style:none; }
+.nav-links a {
+  font-size:11px; letter-spacing:3px; color:var(--dimtxt);
+  text-decoration:none; text-transform:uppercase;
+  transition:color .2s, text-shadow .2s;
+  position:relative; padding-bottom:2px;
+}
+.nav-links a::after {
+  content:''; position:absolute; left:0; bottom:0;
+  width:0; height:1px; background:var(--cyan);
+  transition:width .25s;
+}
+.nav-links a:hover { color:var(--cyan); text-shadow:0 0 8px var(--cyan); }
+.nav-links a:hover::after { width:100%; }
 
-  @keyframes glitch {
-    0%,85%,100% { transform:none; }
-    86% { transform:translateX(3px) skewX(1deg); }
-    87% { transform:translateX(-3px); }
-    88% { transform:none; }
-    94% { transform:translateX(2px); }
-    95% { transform:none; }
-  }
+.nav-status {
+  font-size:9px; letter-spacing:2px; color:var(--green);
+  display:flex; align-items:center; gap:6px;
+}
+.status-dot {
+  width:6px; height:6px; background:var(--green);
+  border-radius:50%; box-shadow:0 0 6px var(--green);
+  animation:blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-  @keyframes glitch2 {
-    0%,85%,100% { transform:none; opacity:.4; }
-    86% { transform:translateX(-4px); opacity:.7; }
-    88% { transform:none; opacity:.4; }
-  }
+/* ═══════════════════════════════════════
+   HERO
+═══════════════════════════════════════ */
+#hero {
+  min-height:100vh;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  position:relative; padding:100px 40px 60px;
+  overflow:hidden;
+}
 
-  @keyframes glitch3 {
-    0%,85%,100% { transform:none; opacity:.3; }
-    87% { transform:translateX(4px) translateY(-2px); opacity:.6; }
-    88% { transform:none; opacity:.3; }
-  }
+/* Grid de fondo */
+.hero-grid {
+  position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(var(--dim) 1px, transparent 1px),
+    linear-gradient(90deg, var(--dim) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  opacity:0.4;
+}
 
-  .tagline {
-    font-size: 11px;
-    letter-spacing: 6px;
-    color: var(--magenta);
-    text-shadow: 0 0 10px var(--magenta);
-    text-align: center;
-    margin-top: -8px;
-  }
+/* Línea horizontal animada */
+.scanline-move {
+  position:absolute; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+  opacity:0.15; animation:scanmove 6s linear infinite;
+  pointer-events:none;
+}
+@keyframes scanmove { 0%{top:-1px} 100%{top:100%} }
 
-  canvas { width:720px; border:1px solid var(--dim); image-rendering:pixelated; }
-  #waveCanvas { height:120px; background:#04040f; }
-  #specCanvas { height:60px;  background:#04040f; }
+.hero-content { position:relative; z-index:2; text-align:center; }
 
-  /* Section progress */
-  .section-bar { display:flex; gap:2px; width:100%; }
-  .sec-block { flex:1; height:5px; background:var(--dim); transition:all .1s; }
-  .sec-block.active-intro   { background:#4488ff; box-shadow:0 0 6px #4488ff; }
-  .sec-block.active-buildup { background:var(--yellow); box-shadow:0 0 6px var(--yellow); }
-  .sec-block.active-drop    { background:var(--magenta); box-shadow:0 0 8px var(--magenta); }
-  .sec-block.active-break   { background:#44ff88; box-shadow:0 0 6px #44ff88; }
-  .sec-block.active-outro   { background:var(--cyan); box-shadow:0 0 6px var(--cyan); }
+.hero-prefix {
+  font-size:11px; letter-spacing:6px; color:var(--dimtxt);
+  margin-bottom:16px; animation:fadein .8s ease both;
+}
 
-  .info-row {
-    display:grid; grid-template-columns:repeat(4,1fr);
-    gap:1px; background:var(--dim); border:1px solid var(--dim); width:100%;
-  }
-  .info-cell { background:var(--bg); padding:6px 12px; }
-  .info-label { font-size:8px; color:var(--dimtxt); letter-spacing:2px; }
-  .info-value { font-family:'VT323',monospace; font-size:22px; color:var(--cyan); text-shadow:0 0 6px var(--cyan); }
-  .info-value.mag { color:var(--magenta); text-shadow:0 0 6px var(--magenta); }
-  .info-value.yel { color:var(--yellow); text-shadow:0 0 6px var(--yellow); }
+.hero-name {
+  font-family:'VT323',monospace;
+  font-size:clamp(72px,12vw,130px);
+  letter-spacing:10px; line-height:1;
+  color:var(--cyan);
+  text-shadow: 0 0 20px var(--cyan), 0 0 60px rgba(0,245,255,0.3);
+  animation:fadein .8s .1s ease both, glitch-hero 5s 1s infinite;
+  position:relative;
+}
 
-  /* Beat grids */
-  .beat-rows { display:flex; flex-direction:column; gap:4px; width:100%; }
-  .beat-row  { display:flex; gap:2px; align-items:center; }
-  .beat-label{ font-size:8px; color:var(--dimtxt); letter-spacing:2px; width:48px; }
-  .beat { width:16px; height:14px; border:1px solid var(--dim); background:var(--bg); transition:all .05s; }
-  .beat.on-kick  { background:var(--magenta); box-shadow:0 0 10px var(--magenta); border-color:var(--magenta); }
-  .beat.on-snare { background:var(--cyan);    box-shadow:0 0 10px var(--cyan); }
-  .beat.on-hat   { background:var(--yellow);  box-shadow:0 0 5px var(--yellow); }
-  .beat.cursor   { border-color:#ffffff55; }
+@keyframes glitch-hero {
+  0%,92%,100%{ transform:none; text-shadow:0 0 20px var(--cyan),0 0 60px rgba(0,245,255,.3); }
+  93%{ transform:translateX(4px) skewX(1deg); text-shadow:-4px 0 var(--magenta),4px 0 var(--green); }
+  94%{ transform:translateX(-3px); }
+  95%{ transform:none; text-shadow:0 0 20px var(--cyan),0 0 60px rgba(0,245,255,.3); }
+}
 
-  /* Controls */
-  .controls { display:flex; gap:8px; align-items:center; width:100%; }
-  button {
-    font-family:'Share Tech Mono',monospace; font-size:11px;
-    letter-spacing:2px; padding:9px 20px;
-    background:transparent; border:1px solid var(--dim);
-    cursor:pointer; transition:all .1s; text-transform:uppercase;
-  }
-  .btn-play { color:var(--cyan); }
-  .btn-play:hover { background:rgba(0,245,255,.1); border-color:var(--cyan); box-shadow:0 0 15px rgba(0,245,255,.25); }
-  .btn-rst  { color:var(--magenta); border-color:#330022; }
-  .btn-rst:hover { background:rgba(255,0,170,.1); border-color:var(--magenta); }
+.hero-role {
+  font-family:'Rajdhani',sans-serif; font-weight:300;
+  font-size:clamp(16px,2.5vw,22px); letter-spacing:4px;
+  color:var(--magenta); text-shadow:0 0 10px var(--magenta);
+  margin-top:12px;
+  animation:fadein .8s .2s ease both;
+}
 
-  .vol-ctrl { display:flex; align-items:center; gap:8px; font-size:9px; color:var(--dimtxt); letter-spacing:2px; margin-left:auto; }
-  input[type=range] { -webkit-appearance:none; width:80px; height:1px; background:var(--dim); outline:none; }
-  input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:10px; height:10px; background:var(--cyan); cursor:pointer; box-shadow:0 0 6px var(--cyan); }
+.hero-tags {
+  display:flex; flex-wrap:wrap; gap:8px;
+  justify-content:center; margin-top:24px;
+  animation:fadein .8s .3s ease both;
+}
+.tag {
+  font-size:9px; letter-spacing:2px; padding:4px 12px;
+  border:1px solid var(--dimtxt); color:var(--dimtxt);
+  text-transform:uppercase; transition:all .2s;
+}
+.tag:hover { border-color:var(--cyan); color:var(--cyan); box-shadow:0 0 8px rgba(0,245,255,.2); }
 
-  /* Formula display */
-  .formula-box {
-    width:100%; border:1px solid var(--dim);
-    padding:10px 14px; font-size:9px;
-    color:var(--dimtxt); line-height:2;
-    position:relative;
-  }
-  .formula-box::before {
-    content:'SYNTHESIS ENGINE //';
-    position:absolute; top:8px; right:12px;
-    font-size:8px; color:#112233; letter-spacing:3px;
-  }
-  .formula-box .hl  { color:var(--cyan);    opacity:.8; }
-  .formula-box .hlm { color:var(--magenta); opacity:.8; }
-  .formula-box .hly { color:var(--yellow);  opacity:.8; }
+.hero-cta {
+  margin-top:40px; display:flex; gap:14px; justify-content:center;
+  animation:fadein .8s .4s ease both;
+}
+.btn {
+  font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:3px;
+  padding:12px 28px; text-decoration:none; text-transform:uppercase;
+  transition:all .2s; cursor:crosshair;
+}
+.btn-primary {
+  background:transparent; color:var(--cyan);
+  border:1px solid var(--cyan);
+}
+.btn-primary:hover { background:rgba(0,245,255,.08); box-shadow:0 0 20px rgba(0,245,255,.2); }
+.btn-secondary {
+  background:transparent; color:var(--magenta);
+  border:1px solid var(--magenta);
+}
+.btn-secondary:hover { background:rgba(255,0,170,.08); box-shadow:0 0 20px rgba(255,0,170,.2); }
 
-  .ticker {
-    font-size:9px; color:var(--dimtxt); overflow:hidden;
-    white-space:nowrap; border-top:1px solid #0a0a20;
-    padding-top:5px; letter-spacing:1px; width:100%;
-  }
+/* Scroll indicator */
+.scroll-ind {
+  position:absolute; bottom:30px; left:50%; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  font-size:9px; letter-spacing:3px; color:var(--dimtxt);
+  animation:fadein 1s .8s ease both;
+}
+.scroll-arrow {
+  width:1px; height:40px; background:linear-gradient(var(--dimtxt),transparent);
+  animation:scrollpulse 2s infinite;
+}
+@keyframes scrollpulse { 0%,100%{opacity:.3} 50%{opacity:1} }
 
-  /* Autoplay overlay */
-  #overlay {
-    position:fixed; inset:0; background:rgba(4,4,15,0.92);
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap:20px; z-index:200; cursor:pointer;
-    transition: opacity .5s;
-  }
-  #overlay .ov-title {
-    font-family:'VT323',monospace; font-size:52px;
-    color:var(--cyan); letter-spacing:8px;
-    text-shadow:0 0 30px var(--cyan);
-    animation: pulse 2s infinite;
-  }
-  #overlay .ov-sub {
-    font-size:11px; color:var(--dimtxt); letter-spacing:4px;
-  }
-  @keyframes pulse {
-    0%,100%{opacity:1} 50%{opacity:.5}
-  }
+@keyframes fadein { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+
+/* ═══════════════════════════════════════
+   MUSIC PLAYER (embebido)
+═══════════════════════════════════════ */
+#player-section {
+  padding:80px 40px;
+  display:flex; flex-direction:column; align-items:center; gap:0;
+  background:var(--bg2);
+  border-top:1px solid var(--dim); border-bottom:1px solid var(--dim);
+}
+
+.section-header {
+  width:100%; max-width:800px;
+  display:flex; align-items:center; gap:16px; margin-bottom:32px;
+}
+.section-num { font-size:11px; color:var(--dimtxt); letter-spacing:3px; }
+.section-line { flex:1; height:1px; background:var(--dim); }
+.section-title {
+  font-family:'VT323',monospace; font-size:32px; letter-spacing:4px;
+  color:var(--cyan);
+}
+
+.player-wrap {
+  width:100%; max-width:800px;
+  border:1px solid var(--dim);
+  background:var(--bg);
+  position:relative; overflow:hidden;
+}
+.player-wrap::before {
+  content:'VAMPICHOCO.SYN // ORIGINAL COMPOSITION';
+  position:absolute; top:10px; right:14px;
+  font-size:8px; color:var(--dimtxt); letter-spacing:2px;
+}
+
+/* Mini player UI */
+.player-top {
+  display:flex; align-items:center; gap:16px;
+  padding:14px 16px 10px;
+  border-bottom:1px solid var(--dim);
+}
+.player-title { font-family:'VT323',monospace; font-size:24px; color:var(--cyan); letter-spacing:3px; }
+.player-bpm { font-size:9px; color:var(--dimtxt); letter-spacing:2px; margin-left:auto; }
+.player-section-name { font-size:11px; color:var(--magenta); letter-spacing:2px; font-family:'VT323',monospace; font-size:20px; }
+
+.player-canvas-wrap { padding:0; position:relative; }
+canvas { width:100%; display:block; image-rendering:pixelated; }
+#pWave { height:80px; background:var(--bg); }
+#pSpec { height:44px; background:var(--bg); }
+
+.player-secbar { display:flex; gap:2px; padding:6px 8px; }
+.psb { flex:1; height:4px; background:var(--dim); transition:all .08s; }
+.psb.on      { background:var(--cyan);    box-shadow:0 0 6px var(--cyan); }
+.psb.on-drop { background:var(--magenta); box-shadow:0 0 8px var(--magenta); }
+
+.player-controls {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 16px 14px; border-top:1px solid var(--dim);
+}
+.p-btn {
+  font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:2px;
+  padding:7px 16px; background:transparent; cursor:crosshair;
+  border:1px solid var(--dim); color:var(--cyan); transition:all .15s;
+}
+.p-btn:hover { border-color:var(--cyan); background:rgba(0,245,255,.07); }
+.p-btn.rst   { color:var(--magenta); border-color:#330022; }
+.p-btn.rst:hover { border-color:var(--magenta); background:rgba(255,0,170,.07); }
+.p-info { font-size:9px; color:var(--dimtxt); letter-spacing:2px; margin-left:auto; display:flex; gap:14px; }
+.p-vol  { display:flex; align-items:center; gap:6px; font-size:9px; color:var(--dimtxt); letter-spacing:2px; }
+input[type=range] { -webkit-appearance:none; width:70px; height:1px; background:var(--dim); outline:none; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:8px; height:8px; background:var(--cyan); cursor:crosshair; }
+
+/* ═══════════════════════════════════════
+   ABOUT
+═══════════════════════════════════════ */
+#about {
+  padding:100px 40px;
+  display:flex; flex-direction:column; align-items:center;
+}
+
+.about-grid {
+  width:100%; max-width:900px;
+  display:grid; grid-template-columns:1fr 1fr; gap:2px;
+  margin-top:0;
+}
+
+.about-main {
+  grid-column:1/-1;
+  border:1px solid var(--dim); padding:32px 36px;
+  background:var(--bg2);
+  margin-bottom:2px;
+}
+
+.about-label { font-size:9px; letter-spacing:4px; color:var(--dimtxt); margin-bottom:16px; }
+.about-bio {
+  font-family:'Rajdhani',sans-serif; font-weight:300;
+  font-size:18px; line-height:1.8; color:var(--txt);
+}
+.about-bio strong { color:var(--cyan); font-weight:600; }
+
+.about-card {
+  border:1px solid var(--dim); padding:24px 28px;
+  background:var(--bg2); transition:border-color .2s;
+}
+.about-card:hover { border-color:var(--dimtxt); }
+.card-label { font-size:8px; letter-spacing:3px; color:var(--dimtxt); margin-bottom:14px; }
+.card-items { display:flex; flex-direction:column; gap:8px; }
+.card-item {
+  display:flex; align-items:center; gap:10px;
+  font-size:12px; color:var(--txt); letter-spacing:1px;
+}
+.card-item::before { content:'▸'; color:var(--cyan); font-size:10px; }
+
+.skills-grid {
+  grid-column:1/-1; display:grid; grid-template-columns:repeat(4,1fr); gap:2px; margin-top:2px;
+}
+.skill-chip {
+  border:1px solid var(--dim); padding:14px 16px; text-align:center;
+  background:var(--bg); font-size:10px; letter-spacing:2px; color:var(--dimtxt);
+  transition:all .2s; text-transform:uppercase;
+}
+.skill-chip:hover { border-color:var(--cyan); color:var(--cyan); background:rgba(0,245,255,.04); box-shadow:0 0 10px rgba(0,245,255,.1); }
+
+/* ═══════════════════════════════════════
+   PROJECTS
+═══════════════════════════════════════ */
+#projects {
+  padding:100px 40px;
+  background:var(--bg2);
+  border-top:1px solid var(--dim);
+  display:flex; flex-direction:column; align-items:center;
+}
+
+.projects-grid {
+  width:100%; max-width:900px;
+  display:grid; grid-template-columns:1fr 1fr; gap:2px;
+  margin-top:0;
+}
+
+.project-card {
+  border:1px solid var(--dim); padding:28px 30px;
+  background:var(--bg); position:relative; overflow:hidden;
+  transition:border-color .2s, transform .2s;
+  cursor:crosshair;
+}
+.project-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+  opacity:0; transition:opacity .2s;
+}
+.project-card:hover { border-color:var(--dimtxt); transform:translateY(-2px); }
+.project-card:hover::before { opacity:1; }
+
+.project-num { font-size:9px; color:var(--dimtxt); letter-spacing:3px; margin-bottom:14px; }
+.project-name {
+  font-family:'VT323',monospace; font-size:26px; letter-spacing:2px;
+  color:var(--cyan); margin-bottom:10px;
+}
+.project-desc {
+  font-family:'Rajdhani',sans-serif; font-size:15px;
+  color:var(--txt); line-height:1.7; margin-bottom:18px;
+}
+.project-tags { display:flex; flex-wrap:wrap; gap:6px; }
+.ptag {
+  font-size:8px; letter-spacing:2px; padding:3px 10px;
+  border:1px solid var(--dimtxt); color:var(--dimtxt); text-transform:uppercase;
+}
+
+.project-card.featured {
+  grid-column:1/-1;
+  display:grid; grid-template-columns:1fr auto;
+  gap:20px; align-items:start;
+}
+.project-card.featured::before {
+  background:linear-gradient(90deg,transparent,var(--magenta),transparent);
+}
+.project-card.featured:hover { border-color:var(--magenta); }
+.project-card.featured .project-name { color:var(--magenta); font-size:30px; }
+.featured-badge {
+  font-size:8px; letter-spacing:3px; color:var(--magenta);
+  border:1px solid var(--magenta); padding:4px 10px;
+  white-space:nowrap; align-self:flex-start;
+}
+
+/* ═══════════════════════════════════════
+   SOCIAL LINKS
+═══════════════════════════════════════ */
+#links {
+  padding:100px 40px;
+  display:flex; flex-direction:column; align-items:center;
+  border-top:1px solid var(--dim);
+}
+
+.links-grid {
+  width:100%; max-width:900px;
+  display:grid; grid-template-columns:repeat(3,1fr); gap:2px;
+  margin-top:0;
+}
+
+.link-card {
+  border:1px solid var(--dim); padding:28px;
+  background:var(--bg2); text-decoration:none;
+  display:flex; flex-direction:column; gap:12px;
+  transition:all .2s; position:relative; overflow:hidden;
+}
+.link-card::after {
+  content:'↗'; position:absolute; top:14px; right:18px;
+  font-size:16px; color:var(--dimtxt); transition:color .2s, transform .2s;
+}
+.link-card:hover { border-color:var(--cyan); background:rgba(0,245,255,.03); }
+.link-card:hover::after { color:var(--cyan); transform:translate(2px,-2px); }
+
+.link-icon { font-size:28px; line-height:1; }
+.link-platform { font-size:9px; letter-spacing:3px; color:var(--dimtxt); text-transform:uppercase; }
+.link-handle { font-family:'VT323',monospace; font-size:24px; letter-spacing:2px; color:var(--cyan); }
+.link-desc { font-size:11px; color:var(--dimtxt); letter-spacing:1px; line-height:1.6; }
+
+/* ═══════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════ */
+footer {
+  border-top:1px solid var(--dim); padding:24px 40px;
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--bg);
+}
+.footer-left { font-size:9px; color:var(--dimtxt); letter-spacing:2px; }
+.footer-left span { color:var(--cyan); }
+.footer-right { font-size:9px; color:var(--dimtxt); letter-spacing:2px; }
+
+/* ═══════════════════════════════════════
+   SCROLL REVEAL
+═══════════════════════════════════════ */
+.reveal {
+  opacity:0; transform:translateY(20px);
+  transition:opacity .6s ease, transform .6s ease;
+}
+.reveal.visible { opacity:1; transform:none; }
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════ */
+@media(max-width:680px){
+  nav { padding:12px 20px; }
+  .nav-links { display:none; }
+  #hero { padding:80px 20px 50px; }
+  .about-grid, .projects-grid, .links-grid, .skills-grid { grid-template-columns:1fr; }
+  .project-card.featured { grid-template-columns:1fr; }
+  #about,#projects,#links,#player-section { padding:60px 20px; }
+  footer { flex-direction:column; gap:8px; text-align:center; }
+}
 </style>
 </head>
 <body>
 
-<!-- Click to start overlay -->
-<div id="overlay" onclick="startFromOverlay()">
-  <div class="ov-title">▶ CLICK TO START</div>
-  <div class="ov-sub">VAMPICHOCO.SYN // CYBERPUNK INTRO</div>
-</div>
+<div class="cursor-dot" id="cursorDot"></div>
 
-<div class="container">
-  <div style="position:relative; width:100%; text-align:center; padding: 8px 0;">
-    <div class="big-title">VAMPICHOCO.SYN</div>
-    <div class="tagline">◈ CYBERPUNK BYTEBEAT INTRO ◈ ORIGINAL COMPOSITION ◈</div>
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">VMPC∴</a>
+  <ul class="nav-links">
+    <li><a href="#player-section">Music</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#links">Links</a></li>
+  </ul>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    SYS://ONLINE
   </div>
+</nav>
 
-  <div class="section-bar" id="secBar"></div>
-
-  <canvas id="waveCanvas" width="720" height="120"></canvas>
-  <canvas id="specCanvas" width="720" height="60"></canvas>
-
-  <div class="info-row">
-    <div class="info-cell">
-      <div class="info-label">SECTION</div>
-      <div class="info-value mag" id="sectionName">INIT</div>
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="scanline-move"></div>
+  <div class="hero-content">
+    <div class="hero-prefix">// INITIALIZING PROFILE...</div>
+    <h1 class="hero-name">VAMPICHOCO</h1>
+    <div class="hero-role">Stack Builder · Data Systems · Game Dev · Hardware Enthusiast</div>
+    <div class="hero-tags">
+      <span class="tag">Python</span>
+      <span class="tag">Data Analysis</span>
+      <span class="tag">Linux</span>
+      <span class="tag">Business Systems</span>
+      <span class="tag">ADK</span>
+      <span class="tag">Automation</span>
+      <span class="tag">Unity</span>
+      <span class="tag">Game Dev</span>
+      <span class="tag">Hardware</span>
+      <span class="tag">México</span>
     </div>
-    <div class="info-cell">
-      <div class="info-label">BAR</div>
-      <div class="info-value" id="barDisplay">00</div>
-    </div>
-    <div class="info-cell">
-      <div class="info-label">BEAT</div>
-      <div class="info-value yel" id="beatDisplay">0</div>
-    </div>
-    <div class="info-cell">
-      <div class="info-label">TICK</div>
-      <div class="info-value" id="tickDisplay">000000</div>
+    <div class="hero-cta">
+      <button onclick="document.getElementById('projects').scrollIntoView({behavior:'smooth'})" class="btn btn-primary">▶ VER PROYECTOS</button>
+      <button onclick="window.location.href='mailto:vamptecnologias@outlook.com'" class="btn btn-secondary">◈ CONTACTO</button>
     </div>
   </div>
+  <div class="scroll-ind">
+    <div class="scroll-arrow"></div>
+    SCROLL
+  </div>
+</section>
 
-  <div class="beat-rows">
-    <div class="beat-row"><span class="beat-label">KICK</span><div id="gKick" style="display:flex;gap:2px;"></div></div>
-    <div class="beat-row"><span class="beat-label">SNARE</span><div id="gSnare" style="display:flex;gap:2px;"></div></div>
-    <div class="beat-row"><span class="beat-label">HAT</span><div id="gHat" style="display:flex;gap:2px;"></div></div>
+<!-- MUSIC PLAYER -->
+<section id="player-section">
+  <div class="section-header" style="max-width:800px;">
+    <span class="section-num">01</span>
+    <div class="section-line"></div>
+    <span class="section-title">ORIGINAL TRACK</span>
+    <div class="section-line"></div>
   </div>
 
-  <div class="controls">
-    <button class="btn-play" id="playBtn" onclick="togglePlay()">▶ PLAY</button>
-    <button class="btn-rst" onclick="doRestart()">⟳ RESTART</button>
-    <div class="vol-ctrl">VOL <input type="range" id="volSlider" min="0" max="1" step="0.01" value="0.45"></div>
+  <div class="player-wrap reveal">
+    <div class="player-top">
+      <div>
+        <div class="player-title">VAMPICHOCO.SYN</div>
+        <div style="font-size:9px;color:var(--dimtxt);letter-spacing:2px;margin-top:2px;">CYBERPUNK BYTEBEAT · NO SAMPLES · PURE MATH</div>
+      </div>
+      <div style="margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+        <div class="player-section-name" id="pSecName">--</div>
+        <div class="player-bpm">142 BPM · <span id="pBar">--</span></div>
+      </div>
+    </div>
+
+    <div class="player-secbar" id="pSecBar"></div>
+    <div class="player-canvas-wrap">
+      <canvas id="pWave" width="800" height="80"></canvas>
+      <canvas id="pSpec" width="800" height="44"></canvas>
+    </div>
+
+    <div class="player-controls">
+      <button class="p-btn" id="pPlayBtn" onclick="window.pToggle()">▶ PLAY</button>
+      <button class="p-btn rst" onclick="window.pRestart()">⟳</button>
+      <div class="p-info">
+        <span id="pStep">STEP --</span>
+        <span id="pTick">T:000000</span>
+      </div>
+      <div class="p-vol">VOL <input type="range" id="pVol" min="0" max="1" step="0.01" value="0.45"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-header" style="max-width:900px;">
+    <span class="section-num">02</span>
+    <div class="section-line"></div>
+    <span class="section-title">ABOUT</span>
+    <div class="section-line"></div>
   </div>
 
-  <div class="formula-box">
-    <span class="hl">KICK</span>   tanh( sin(φ·∛t) · e^(-t/0.22s) + click·e^(-t/8ms) + sin(45hz)·e^(-t/0.35s) ) <br>
-    <span class="hlm">BASS</span>   Karplus-Strong — buf[i] = (buf[i] + buf[i+1]) × 0.4985  ← física de cuerda<br>
-    <span class="hl">LEAD</span>   FM synthesis — sin( 2π·fc·t + d·sin(2π·fm·t) )  carrier + modulator<br>
-    <span class="hly">ARP </span>   square( 440 · 2^(note/12) ) × env  @ 16th notes<br>
-    <span class="hl">MIX </span>   tanh( kick + snare + hat + bass·sc + lead·sc + arp·sc ) × 0.85
+  <div class="about-grid reveal">
+    <div class="about-main">
+      <div class="about-label">// BIO.TXT</div>
+      <p class="about-bio">
+        Soy <strong>Vampichoco</strong>, builder de stacks desde México. Me muevo entre datos, automatización y sistemas de negocio — construyo herramientas que realmente funcionan. Si hay un proceso que se puede automatizar, lo automatizo. Si hay datos, los analizo. También le muevo al <strong>game dev con Unity</strong> y tengo un juego en desarrollo para Discord.
+        <br><br>
+        Cuando no estoy en la terminal estoy construyendo PCs, reparando hardware, escuchando <strong>punk rock y keygen music</strong>, jugando en Xbox o PC, o explorando lo último en tecnología — OLEDs, celulares, Linux, lo que sea que valga la pena desarmar.
+      </p>
+    </div>
+
+    <div class="about-card">
+      <div class="card-label">// STACK</div>
+      <div class="card-items">
+        <div class="card-item">Python · Pandas · SQL</div>
+        <div class="card-item">ADK · Multi-agent systems</div>
+        <div class="card-item">Linux · Windows · Terminal</div>
+        <div class="card-item">Automatización de procesos</div>
+        <div class="card-item">Business intelligence</div>
+      </div>
+    </div>
+
+    <div class="about-card">
+      <div class="card-label">// INTERESES</div>
+      <div class="card-items">
+        <div class="card-item">Keygen music · Punk rock</div>
+        <div class="card-item">Xbox · PC Gaming</div>
+        <div class="card-item">Hardware · Reparaciones</div>
+        <div class="card-item">Construcción de PCs</div>
+        <div class="card-item">OLED · Celulares · Tech</div>
+      </div>
+    </div>
+
+    <div class="skills-grid">
+      <div class="skill-chip">Data Analysis</div>
+      <div class="skill-chip">Automation</div>
+      <div class="skill-chip">Python</div>
+      <div class="skill-chip">SQL</div>
+      <div class="skill-chip">Linux</div>
+      <div class="skill-chip">ADK / AI</div>
+      <div class="skill-chip">Unity</div>
+      <div class="skill-chip">Game Dev</div>
+      <div class="skill-chip">Hardware</div>
+      <div class="skill-chip">Business Systems</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-header" style="max-width:900px;">
+    <span class="section-num">03</span>
+    <div class="section-line"></div>
+    <span class="section-title">PROJECTS</span>
+    <div class="section-line"></div>
   </div>
 
-  <div class="ticker" id="ticker">
-    ░░ VAMPICHOCO.SYN ░░ CYBERPUNK BYTEBEAT ░░ KARPLUS-STRONG BASS ░░ FM LEAD ░░ CYBER KICK ░░ PURE MATH ░░ NO SAMPLES ░░ 142 BPM ░░ DEMOSCENE TRIBUTE ░░ ORIGINAL COMPOSITION ░░ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  </div>
-</div>
+  <div class="projects-grid reveal">
 
+    <div class="project-card featured">
+      <div>
+        <div class="project-num">P-001 · FEATURED</div>
+        <div class="project-name">MULTI-AGENT SYSTEM</div>
+        <div class="project-desc">Sistema multi-agente con ADK cubriendo ventas, inventario, contabilidad, reportes y facturación CFDI/SAT. Arquitectura modular, terminal-first, diseñado para flujos de negocio reales en México.</div>
+        <div class="project-tags">
+          <span class="ptag">ADK</span>
+          <span class="ptag">Python</span>
+          <span class="ptag">CFDI</span>
+          <span class="ptag">SAT</span>
+          <span class="ptag">Multi-agent</span>
+          <span class="ptag">Business</span>
+        </div>
+      </div>
+      <span class="featured-badge">EN DESARROLLO</span>
+    </div>
+
+    <div class="project-card featured" style="border-color:#1a0a2e;">
+      <div>
+        <div class="project-num">P-002 · FEATURED</div>
+        <div class="project-name" style="color:#aa44ff;">DISCORD GAME</div>
+        <div class="project-desc">Juego en desarrollo con Unity para la plataforma de Discord. Game dev desde cero — mecánicas, diseño y sistemas propios.</div>
+        <div class="project-tags">
+          <span class="ptag">Unity</span>
+          <span class="ptag">C#</span>
+          <span class="ptag">Discord</span>
+          <span class="ptag">Game Dev</span>
+        </div>
+      </div>
+      <span class="featured-badge" style="color:#aa44ff;border-color:#aa44ff;">EN DESARROLLO</span>
+    </div>
+
+    <div class="project-card">
+      <div class="project-num">P-003</div>
+      <div class="project-name">DATA PIPELINE</div>
+      <div class="project-desc">Herramientas de análisis y automatización de datos. Pipelines limpios, reportes automáticos, menos trabajo manual.</div>
+      <div class="project-tags">
+        <span class="ptag">Python</span>
+        <span class="ptag">Pandas</span>
+        <span class="ptag">SQL</span>
+        <span class="ptag">Automation</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-num">P-004</div>
+      <div class="project-name">VAMPICHOCO.SYN</div>
+      <div class="project-desc">Sintetizador bytebeat original. Música generada 100% matemáticamente — kick cyberpunk, Karplus-Strong bass, FM lead. Sin samples.</div>
+      <div class="project-tags">
+        <span class="ptag">JavaScript</span>
+        <span class="ptag">Web Audio API</span>
+        <span class="ptag">Bytebeat</span>
+        <span class="ptag">Demoscene</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- LINKS -->
+<section id="links">
+  <div class="section-header" style="max-width:900px;">
+    <span class="section-num">04</span>
+    <div class="section-line"></div>
+    <span class="section-title">LINKS</span>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="links-grid reveal">
+
+    <a href="https://github.com/vampichampi" target="_blank" class="link-card">
+      <div class="link-icon">⌥</div>
+      <div class="link-platform">GitHub</div>
+      <div class="link-handle">vampichampi</div>
+      <div class="link-desc">Repos, proyectos, código. Todo lo que construyo.</div>
+    </a>
+
+    <div class="link-card" onclick="window.location.href='mailto:vamptecnologias@outlook.com'" style="cursor:crosshair;">
+      <div class="link-icon">◉</div>
+      <div class="link-platform">Email</div>
+      <div class="link-handle">vamptecnologias</div>
+      <div class="link-desc">vamptecnologias@outlook.com</div>
+    </div>
+
+    <a href="https://www.youtube.com/@vampistack" target="_blank" class="link-card">
+      <div class="link-icon">▶</div>
+      <div class="link-platform">YouTube</div>
+      <div class="link-handle">VampiStack</div>
+      <div class="link-desc">Videos de tech, hardware, tutoriales, game dev y más.</div>
+    </a>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">© 2025 <span>VAMPICHOCO</span> · MÉXICO · SYS://BUILD_OK</div>
+  <div class="footer-right">MADE WITH PURE CODE · NO TEMPLATES</div>
+</footer>
+
+<!-- ================================================================
+     MUSIC ENGINE — mismo synth de vampichoco.syn
+================================================================ -->
 <script>
-const SR=44100, TAU=Math.PI*2, BPM=142;
-const SPB=SR*60/BPM, SP8=SPB/2, SP16=SPB/4;
+// ── SYNTH ──────────────────────────────────────────────────────
+const SR=44100,TAU=Math.PI*2,BPM=142;
+const SPB=SR*60/BPM,SP8=SPB/2,SP16=SPB/4;
 
 const SECTIONS=[
-  {name:'INTRO',   bars:4,  kick:false,drop:false,arp:false, lead:false},
-  {name:'BUILDUP', bars:4,  kick:true, drop:false,arp:true,  lead:false},
-  {name:'DROP',    bars:8,  kick:true, drop:true, arp:true,  lead:true },
-  {name:'BREAK',   bars:4,  kick:false,drop:false,arp:false, lead:true },
-  {name:'DROP II', bars:8,  kick:true, drop:true, arp:true,  lead:true },
-  {name:'OUTRO',   bars:4,  kick:true, drop:false,arp:false, lead:false},
+  {name:'INTRO',   bars:4,  kick:false,drop:false,arp:false,lead:false},
+  {name:'BUILDUP', bars:4,  kick:true, drop:false,arp:true, lead:false},
+  {name:'DROP',    bars:12, kick:true, drop:true, arp:true, lead:true },
+  {name:'BREAK',   bars:4,  kick:false,drop:false,arp:false,lead:true },
+  {name:'BRIDGE',  bars:4,  kick:true, drop:false,arp:true, lead:false},
+  {name:'DROP II', bars:12, kick:true, drop:true, arp:true, lead:true },
+  {name:'OUTRO',   bars:4,  kick:true, drop:false,arp:false,lead:false},
 ];
+const LOOP=Math.round(SECTIONS.reduce((a,s)=>a+s.bars,0)*4*SPB);
+let _ss=[];{let b=0;SECTIONS.forEach((s,i)=>{_ss[i]=b*4*SPB;b+=s.bars;});}
 
-const TOTAL_BARS=SECTIONS.reduce((a,s)=>a+s.bars,0);
-const LOOP=Math.round(TOTAL_BARS*4*SPB);
-
-let _secStart=[];
-{let b=0; SECTIONS.forEach((s,i)=>{_secStart[i]=b*4*SPB; b+=s.bars;});}
-
-function getSection(t){
+function getSec(t){
   t=t%LOOP;
   for(let i=SECTIONS.length-1;i>=0;i--)
-    if(t>=_secStart[i]) return{sec:SECTIONS[i],secIdx:i,secT:t-_secStart[i]};
-  return{sec:SECTIONS[0],secIdx:0,secT:0};
+    if(t>=_ss[i]) return{sec:SECTIONS[i],si:i,st:t-_ss[i]};
+  return{sec:SECTIONS[0],si:0,st:0};
 }
 
-const MELODY_SEQ=[
-  0,0,3,7, 5,3,0,-2,
-  0,0,5,10, 8,5,3,0,
-  7,7,10,12, 10,7,5,3,
-  5,5,8,12, 10,8,5,3,
-];
+const MELODY_SEQ=[0,0,3,7,5,3,0,-2,0,0,5,10,8,5,3,0,7,7,10,12,10,7,5,3,5,5,8,12,10,8,5,3];
+const BASS_PROG=[0,0,5,7,3,3,8,10,0,0,5,7,3,3,8,10];
+const ARP_INT=[0,7,12,7,3,7,0,3];
 
-const BASS_PROG=[0,0,5,7, 3,3,8,10, 0,0,5,7, 3,3,8,10];
-const ARP_INTERVALS=[0,7,12,7,3,7,0,3];
-
-// Karplus-Strong
 let ksBuffer=null,ksLen=0,ksPos=0;
-function ksInit(freq){
-  ksLen=Math.max(2,Math.round(SR/freq));
-  ksBuffer=new Float32Array(ksLen);
-  for(let i=0;i<ksLen;i++) ksBuffer[i]=Math.random()*2-1;
-  ksPos=0;
-}
-function ksTick(){
-  const next=(ksPos+1)%ksLen;
-  const out=ksBuffer[ksPos];
-  ksBuffer[ksPos]=(ksBuffer[ksPos]+ksBuffer[next])*0.4985;
-  ksPos=next; return out;
-}
+function ksInit(freq){ksLen=Math.max(2,Math.round(SR/freq));ksBuffer=new Float32Array(ksLen);for(let i=0;i<ksLen;i++)ksBuffer[i]=Math.random()*2-1;ksPos=0;}
+function ksTick(){const n=(ksPos+1)%ksLen,o=ksBuffer[ksPos];ksBuffer[ksPos]=(ksBuffer[ksPos]+ksBuffer[n])*0.4985;ksPos=n;return o;}
 
-function cyberpunk_kick(kt){
-  if(kt<0) return 0;
-  const sweepTime=0.08*SR;
-  const pitchEnv=kt<sweepTime?Math.exp(-kt/(sweepTime*0.4)):0;
-  const freq=40+140*pitchEnv;
-  const phase=kt/SR*freq*TAU;
-  const bodyEnv=Math.exp(-kt/(SR*0.22));
-  const body=Math.sin(phase)*bodyEnv;
-  const clickEnv=Math.exp(-kt/(SR*0.008));
-  const click=(Math.random()-0.5+Math.sin(TAU*800*kt/SR))*clickEnv*0.6;
-  const subEnv=Math.max(0,1-kt/(SR*0.35));
-  const sub=Math.sin(TAU*45*kt/SR)*subEnv*subEnv*0.5;
-  return Math.tanh((body*0.7+click*0.25+sub*0.5)*2.5)*0.8;
+function kick(kt){
+  if(kt<0)return 0;
+  const sw=Math.exp(-kt/(SR*0.06)),freq=40+140*sw;
+  const body=Math.sin(TAU*freq*kt/SR)*Math.exp(-kt/(SR*0.22));
+  const click=(Math.random()-0.5+Math.sin(TAU*800*kt/SR))*Math.exp(-kt/(SR*0.008))*0.6;
+  const sub=Math.sin(TAU*45*kt/SR)*Math.max(0,1-kt/(SR*0.35))**2*0.5;
+  const thunder=(Math.sin(TAU*28*kt/SR)*0.6+Math.sin(TAU*34*kt/SR)*0.4)*Math.exp(-kt/(SR*0.55))**2*0.7;
+  return Math.tanh((body*0.7+click*0.25+sub*0.5+thunder)*2.5)*0.82;
 }
+function snare(st){if(st<0)return 0;return Math.tanh(((Math.random()-0.5)*Math.exp(-st/(SR*.08))*.7+Math.sin(TAU*200*st/SR)*Math.exp(-st/(SR*.06))*.4)*3)*.6;}
+function hihat(ht,open=false){if(ht<0)return 0;return((Math.random()-0.5)*.7+Math.sin(TAU*8000*ht/SR)*.3)*Math.exp(-ht/(SR*(open?.15:.025)))*.35;}
+function endTick(tt){if(tt<0)return 0;return(Math.sin(TAU*3200*tt/SR)+Math.sin(TAU*5800*tt/SR)*.5)*(Math.random()*.3+.7)*Math.exp(-tt/(SR*.012))*.45;}
+function fmLead(t,note,env){const f=220*Math.pow(2,note/12),mp=TAU*f*2*t/SR,cp=TAU*f*t/SR+(f*1.5/f)*Math.sin(mp);return Math.sin(cp*(1+.008*Math.sin(TAU*5*t/SR)))*env;}
 
-function cyber_snare(st){
-  if(st<0) return 0;
-  const ne=Math.exp(-st/(SR*0.08));
-  const be=Math.exp(-st/(SR*0.06));
-  return Math.tanh(((Math.random()-0.5)*ne*0.7+Math.sin(TAU*200*st/SR)*be*0.4)*3)*0.6;
-}
-
-function hihat(ht,open=false){
-  if(ht<0) return 0;
-  const env=Math.exp(-ht/(SR*(open?0.15:0.025)));
-  return((Math.random()-0.5)*0.7+Math.sin(TAU*8000*ht/SR)*0.3)*env*0.35;
-}
-
-function fm_lead(t,note,env){
-  const freq=220*Math.pow(2,note/12);
-  const modPhase=TAU*freq*2*t/SR;
-  const carPhase=TAU*freq*t/SR+(freq*1.5/freq)*Math.sin(modPhase);
-  return Math.sin(carPhase*(1+0.008*Math.sin(TAU*5*t/SR)))*env;
-}
-
-let scGain=1.0, prevBeatKS=-1;
+let scGain=1,prevBeatKS=-1;
 
 function synth(t){
   t=t%LOOP;
-  const{sec,secT}=getSection(t);
-  const beatAbs=Math.floor(t/SPB);
-  const beatInBar=beatAbs%4;
-  const bar=Math.floor(beatAbs/4);
-  const beatT=t%SPB;
-  const step16=Math.floor(t/SP16)%16;
-  const step8=Math.floor(t/SP8);
-  const stepT=t%SP16;
-
-  if(beatAbs!==prevBeatKS&&sec.drop){
-    ksInit(55*Math.pow(2,BASS_PROG[bar%BASS_PROG.length]/12));
-    prevBeatKS=beatAbs;
-  }
-
-  const KICK_PAT=sec.drop
-    ?[1,0,0,0,0,0,1,0,1,0,0,0,1,0,0,1]
-    :[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0];
-  const SNARE_PAT=[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0];
-  const HAT_PAT=sec.drop
-    ?[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1]
-    :[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0];
-
-  let kick=0;
-  if(sec.kick&&KICK_PAT[step16]){
-    kick=cyberpunk_kick(stepT);
-    scGain=Math.max(0.2,1-Math.exp(-stepT/(SR*0.05))*0.8);
-  } else {
-    scGain=Math.min(1.0,scGain+0.003);
-  }
-
-  let snare=SNARE_PAT[step16]?cyber_snare(stepT)*0.8:0;
-  let hat=HAT_PAT[step16]?hihat(stepT,step16===15&&sec.drop):0;
-  let bass=sec.drop&&ksBuffer?ksTick()*0.5*scGain:0;
-
+  const{sec,st}=getSec(t);
+  const beatAbs=Math.floor(t/SPB),bar=Math.floor(beatAbs/4);
+  const step16=Math.floor(t/SP16)%16,step8=Math.floor(t/SP8),stepT=t%SP16;
+  if(beatAbs!==prevBeatKS&&sec.drop){ksInit(55*Math.pow(2,BASS_PROG[bar%BASS_PROG.length]/12));prevBeatKS=beatAbs;}
+  const KP=sec.drop?[1,0,0,0,0,0,1,0,1,0,0,0,1,0,0,1]:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0];
+  const SP=[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0];
+  const HP=sec.drop?[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1]:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0];
+  let k=0;
+  if(sec.kick&&KP[step16]){k=kick(stepT);scGain=Math.max(.2,1-Math.exp(-stepT/(SR*.05))*.8);}
+  else scGain=Math.min(1,scGain+.003);
+  const sn=SP[step16]?snare(stepT)*.8:0;
+  const h=HP[step16]?hihat(stepT,step16===15&&sec.drop):0;
+  const tick=sec.kick&&step16===15?endTick(stepT)*.7:0;
+  const bass=sec.drop&&ksBuffer?ksTick()*.5*scGain:0;
   let lead=0;
-  if(sec.lead){
-    const note=MELODY_SEQ[step8%MELODY_SEQ.length];
-    const env=Math.exp(-(t%SP8)/(SP8*0.7))*0.4;
-    lead=fm_lead(t,note,env)*scGain;
-  }
-
+  if(sec.lead){const note=MELODY_SEQ[step8%MELODY_SEQ.length],env=Math.exp(-(t%SP8)/(SP8*.7))*.4;lead=fmLead(t,note,env)*scGain;}
   let arp=0;
-  if(sec.arp){
-    const arpNote=MELODY_SEQ[step8%MELODY_SEQ.length]+ARP_INTERVALS[step16%ARP_INTERVALS.length];
-    const arpFreq=440*Math.pow(2,arpNote/12);
-    const sq=Math.sin(TAU*arpFreq*t/SR)>0?1:-1;
-    arp=sq*Math.exp(-(t%SP16)/SP16)*0.18*scGain;
-  }
-
-  let pad=(!sec.drop&&!sec.kick)
-    ?(Math.sin(TAU*110*Math.pow(2,MELODY_SEQ[(step8/4|0)%MELODY_SEQ.length]/12)*t/SR)*0.15):0;
-
-  return Math.tanh((kick+snare+hat+bass+lead*0.5+arp*0.7+pad)*1.2)*0.85;
+  if(sec.arp){const an=MELODY_SEQ[step8%MELODY_SEQ.length]+ARP_INT[step16%ARP_INT.length],af=440*Math.pow(2,an/12);arp=(Math.sin(TAU*af*t/SR)>0?1:-1)*Math.exp(-(t%SP16)/SP16)*.18*scGain;}
+  const pad=(!sec.drop&&!sec.kick)?Math.sin(TAU*110*Math.pow(2,MELODY_SEQ[(step8/4|0)%MELODY_SEQ.length]/12)*t/SR)*.15:0;
+  return Math.tanh((k+sn+h+tick+bass+lead*.5+arp*.7+pad)*1.2)*.85;
 }
 
-// Audio engine
+// ── AUDIO ENGINE ──────────────────────────────────────────────
 let actx=null,playing=false,scriptNode=null,gainNode=null,globalT=0;
+function getCtx(){if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)({sampleRate:SR});return actx;}
 
-function getCtx(){ if(!actx) actx=new(window.AudioContext||window.webkitAudioContext)({sampleRate:SR}); return actx; }
-
-function start(){
-  const ac=getCtx();
-  if(ac.state==='suspended') ac.resume();
+function pStart(){
+  const ac=getCtx();if(ac.state==='suspended')ac.resume();
   ksInit(55);
-  gainNode=ac.createGain();
-  gainNode.gain.value=parseFloat(document.getElementById('volSlider').value);
-  document.getElementById('volSlider').oninput=e=>gainNode.gain.value=e.target.value;
-  scriptNode=ac.createScriptProcessor(2048,0,1);
+  gainNode=ac.createGain();gainNode.gain.value=+document.getElementById('pVol').value;
+  document.getElementById('pVol').oninput=e=>{if(gainNode)gainNode.gain.value=+e.target.value;};
+  scriptNode=ac.createScriptProcessor(4096,0,1);
   scriptNode.onaudioprocess=e=>{
     const out=e.outputBuffer.getChannelData(0);
-    for(let i=0;i<2048;i++){
-      out[i]=Math.max(-1,Math.min(1,synth(globalT)));
-      waveData[waveWr++%WAVE_N]=out[i];
-      globalT++;
-    }
+    for(let i=0;i<4096;i++){out[i]=Math.max(-1,Math.min(1,synth(globalT)));waveData[waveWr++%WAVE_N]=out[i];globalT++;}
   };
-  scriptNode.connect(gainNode);
-  gainNode.connect(ac.destination);
-  playing=true;
-  document.getElementById('playBtn').textContent='⏸ PAUSE';
+  scriptNode.connect(gainNode);gainNode.connect(ac.destination);
+  playing=true;document.getElementById('pPlayBtn').textContent='⏸ PAUSE';
 }
+function pStop(){if(scriptNode){scriptNode.disconnect();scriptNode=null;}playing=false;document.getElementById('pPlayBtn').textContent='▶ PLAY';}
+window.pToggle=()=>playing?pStop():pStart();
+window.pRestart=()=>{pStop();globalT=0;ksInit(55);scGain=1;prevBeatKS=-1;setTimeout(pStart,80);};
 
-function stop(){
-  if(scriptNode){scriptNode.disconnect();scriptNode=null;}
-  playing=false;
-  document.getElementById('playBtn').textContent='▶ PLAY';
-}
-
-window.togglePlay=()=>playing?stop():start();
-window.doRestart=()=>{stop();globalT=0;ksInit(55);scGain=1;setTimeout(start,80);};
-
-function startFromOverlay(){
-  const ov=document.getElementById('overlay');
-  ov.style.opacity='0';
-  setTimeout(()=>ov.style.display='none',500);
-  start();
-}
-
-// Visualizer
-const WAVE_N=720;
-const waveData=new Float32Array(WAVE_N);
-let waveWr=0,animT=0;
-
-const wCvs=document.getElementById('waveCanvas'),wCtx=wCvs.getContext('2d');
-const sCvs=document.getElementById('specCanvas'),sCtx=sCvs.getContext('2d');
+// ── VISUALIZER ─────────────────────────────────────────────────
+const WAVE_N=800;const waveData=new Float32Array(WAVE_N);let waveWr=0,animT=0;
+const wCvs=document.getElementById('pWave'),wCtx=wCvs.getContext('2d');
+const sCvs=document.getElementById('pSpec'),sCtx=sCvs.getContext('2d');
 
 // Build section bar
-const secBar=document.getElementById('secBar');
-SECTIONS.forEach((s,i)=>{
-  for(let b=0;b<s.bars;b++){
-    const d=document.createElement('div');
-    d.className='sec-block'; d.id=`sb_${i}_${b}`;
-    secBar.appendChild(d);
-  }
-});
-
-// Build beat grids
-['gKick','gSnare','gHat'].forEach(id=>{
-  const el=document.getElementById(id);
-  for(let i=0;i<16;i++){
-    const d=document.createElement('div');
-    d.className='beat'; d.id=`${id}_${i}`;
-    el.appendChild(d);
-  }
-});
+const psb=document.getElementById('pSecBar');
+SECTIONS.forEach((s,i)=>{for(let b=0;b<s.bars;b++){const d=document.createElement('div');d.className='psb';d.id=`psb_${i}_${b}`;psb.appendChild(d);}});
 
 function draw(){
-  requestAnimationFrame(draw);
-  animT++;
-
+  requestAnimationFrame(draw);animT++;
   const t=globalT%LOOP;
-  const{sec,secIdx,secT}=getSection(t);
-  const beatAbs=Math.floor(t/SPB);
-  const bar=Math.floor(beatAbs/4);
-  const beatInBar=beatAbs%4;
-  const step16=Math.floor(t/SP16)%16;
+  const{sec,si,st}=getSec(t);
+  const beatAbs=Math.floor(t/SPB),bar=Math.floor(beatAbs/4),beatInBar=beatAbs%4;
+  const step16=Math.floor(t/SP16)%16,step8=Math.floor(t/SP8);
 
   // Section bar
-  document.querySelectorAll('.sec-block').forEach(el=>{
-    el.className='sec-block';
-  });
-  const barInSec=Math.floor(secT/(4*SPB));
-  const activeEl=document.getElementById(`sb_${secIdx}_${barInSec}`);
-  if(activeEl){
-    const cls=sec.name.toLowerCase().split(' ')[0];
-    activeEl.className=`sec-block active-${cls}`;
-  }
+  document.querySelectorAll('.psb').forEach(e=>e.className='psb');
+  const bi=Math.floor(st/(4*SPB));
+  const ae=document.getElementById(`psb_${si}_${bi}`);
+  if(ae)ae.classList.add(sec.drop?'on-drop':'on');
 
   // Info
-  document.getElementById('sectionName').textContent=sec.name;
-  document.getElementById('barDisplay').textContent=String(Math.floor(t/(4*SPB))).padStart(2,'0');
-  document.getElementById('beatDisplay').textContent=beatInBar+1;
-  document.getElementById('tickDisplay').textContent=String(globalT%LOOP).padStart(6,'0');
+  document.getElementById('pSecName').textContent=sec.name;
+  document.getElementById('pBar').textContent='BAR '+(Math.floor(t/(4*SPB))+1).toString().padStart(2,'0');
+  document.getElementById('pStep').textContent='STEP '+(step8%32).toString().padStart(2,'0');
+  document.getElementById('pTick').textContent='T:'+String(globalT%LOOP).padStart(6,'0');
 
-  // Beat grids
-  const KICK_PAT=sec.drop
-    ?[1,0,0,0,0,0,1,0,1,0,0,0,1,0,0,1]
-    :[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0];
-  const SNARE_PAT=[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0];
-  const HAT_PAT=sec.drop
-    ?[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1]
-    :[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0];
-
-  for(let i=0;i<16;i++){
-    document.getElementById(`gKick_${i}`).className='beat'+(i===step16?' cursor':'')+(KICK_PAT[i]&&i===step16?' on-kick':'');
-    document.getElementById(`gSnare_${i}`).className='beat'+(i===step16?' cursor':'')+(SNARE_PAT[i]&&i===step16?' on-snare':'');
-    document.getElementById(`gHat_${i}`).className='beat'+(i===step16?' cursor':'')+(HAT_PAT[i]&&i===step16?' on-hat':'');
-  }
-
-  // Waveform
+  // Wave
   const W=wCvs.width,H=wCvs.height;
-  wCtx.fillStyle='rgba(4,4,15,0.4)';
-  wCtx.fillRect(0,0,W,H);
-  wCtx.strokeStyle='#0a0a25'; wCtx.lineWidth=1;
+  wCtx.fillStyle='rgba(4,4,15,.42)';wCtx.fillRect(0,0,W,H);
+  wCtx.strokeStyle='#0a0a25';wCtx.lineWidth=1;
   for(let y=0;y<=4;y++){wCtx.beginPath();wCtx.moveTo(0,y*H/4);wCtx.lineTo(W,y*H/4);wCtx.stroke();}
-  for(let x=0;x<=8;x++){wCtx.beginPath();wCtx.moveTo(x*W/8,0);wCtx.lineTo(x*W/8,H);wCtx.stroke();}
-
-  wCtx.strokeStyle='#00f5ff'; wCtx.lineWidth=1.5; wCtx.shadowColor='#00f5ff'; wCtx.shadowBlur=8;
+  wCtx.strokeStyle='#00f5ff';wCtx.lineWidth=1.5;wCtx.shadowColor='#00f5ff';wCtx.shadowBlur=7;
   wCtx.beginPath();
-  for(let x=0;x<W;x++){
-    const idx=(waveWr-W+x+WAVE_N*4)%WAVE_N;
-    const y=(H/2)-waveData[idx]*(H/2-5);
-    x===0?wCtx.moveTo(x,y):wCtx.lineTo(x,y);
-  }
-  wCtx.stroke();
-
-  wCtx.strokeStyle='rgba(255,0,170,0.2)'; wCtx.lineWidth=1; wCtx.shadowBlur=0;
-  wCtx.beginPath();
-  for(let x=0;x<W;x++){
-    const idx=(waveWr-W+x-4+WAVE_N*4)%WAVE_N;
-    const y=(H/2)-waveData[idx]*(H/2-5);
-    x===0?wCtx.moveTo(x,y):wCtx.lineTo(x,y);
-  }
-  wCtx.stroke(); wCtx.shadowBlur=0;
+  for(let x=0;x<W;x++){const idx=(waveWr-W+x+WAVE_N*4)%WAVE_N;const y=(H/2)-waveData[idx]*(H/2-4);x===0?wCtx.moveTo(x,y):wCtx.lineTo(x,y);}
+  wCtx.stroke();wCtx.shadowBlur=0;
 
   // Spectrum
   const SW=sCvs.width,SH=sCvs.height;
-  sCtx.fillStyle='rgba(4,4,15,0.5)'; sCtx.fillRect(0,0,SW,SH);
-  const BARS=80,bw=SW/BARS-0.5;
+  sCtx.fillStyle='rgba(4,4,15,.5)';sCtx.fillRect(0,0,SW,SH);
+  const BARS=80,bw=SW/BARS-.5;
   for(let b=0;b<BARS;b++){
-    let sum=0;
-    const chunk=Math.max(1,Math.floor(WAVE_N/BARS));
-    for(let i=0;i<chunk;i++) sum+=Math.abs(waveData[(waveWr-b*chunk-i+WAVE_N*4)%WAVE_N]);
-    const avg=sum/chunk;
-    const fo=Math.pow(1-b/BARS,1.2);
-    const h=Math.min(SH-2,avg*SH*3.5*fo+(playing?Math.random()*2:0));
+    let sum=0;const chunk=Math.max(1,Math.floor(WAVE_N/BARS));
+    for(let i=0;i<chunk;i++)sum+=Math.abs(waveData[(waveWr-b*chunk-i+WAVE_N*4)%WAVE_N]);
+    const fo=Math.pow(1-b/BARS,1.2),h=Math.min(SH-2,sum/chunk*SH*3.5*fo+(playing?Math.random()*1.5:0));
     const r=Math.round(b/BARS*255);
-    sCtx.fillStyle=`rgba(${r},${255-r},255,${0.5+fo*0.5})`;
-    sCtx.fillRect(b*(bw+0.5),SH-h,bw,h);
-    sCtx.fillStyle=`rgba(255,255,255,${fo*0.35})`;
-    sCtx.fillRect(b*(bw+0.5),SH-h-1,bw,1);
+    sCtx.fillStyle=`rgba(${r},${255-r},255,${.5+fo*.5})`;
+    sCtx.fillRect(b*(bw+.5),SH-h,bw,h);
   }
 
-  document.getElementById('ticker').scrollLeft=(animT*0.8)%(document.getElementById('ticker').scrollWidth||1);
+  // Ticker
+  document.getElementById('ticker')&&(document.getElementById('ticker').scrollLeft=(animT*.7)%(document.getElementById('ticker').scrollWidth||1));
 }
-
 draw();
+
+// ── CURSOR ─────────────────────────────────────────────────────
+const dot=document.getElementById('cursorDot');
+document.addEventListener('mousemove',e=>{dot.style.left=e.clientX+'px';dot.style.top=e.clientY+'px';});
+
+// ── SCROLL REVEAL ──────────────────────────────────────────────
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 </script>
 </body>
 </html>
