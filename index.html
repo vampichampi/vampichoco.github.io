@@ -875,6 +875,12 @@ draw();
 const dot=document.getElementById('cursorDot');
 document.addEventListener('mousemove',e=>{dot.style.left=e.clientX+'px';dot.style.top=e.clientY+'px';});
 
+// Iniciar XM en primer click (requerimiento del navegador)
+document.addEventListener('click', function startXMOnce() {
+  startXM();
+  document.removeEventListener('click', startXMOnce);
+}, {once: true});
+
 // ── SCROLL REVEAL ──────────────────────────────────────────────
 const observer=new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
@@ -886,14 +892,22 @@ document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 let chipPlayer = null;
 let xmMuted = false;
 let xmReady = false;
+let xmStarted = false;
 
 function initXM() {
   if (typeof ChiptuneJsPlayer === 'undefined') return;
   const config = new ChiptuneJsConfig();
-  config.repeatCount = -1; // loop infinito
-  config.volume = 64;      // volumen medio (0-128)
+  config.repeatCount = -1;
+  config.stereoSeparation = 70;
+  config.interpolationFilter = 4;
   chipPlayer = new ChiptuneJsPlayer(config);
+  // NO autoplay — esperar click del usuario
+  xmReady = false;
+}
 
+function startXM() {
+  if (!chipPlayer || xmStarted) return;
+  xmStarted = true;
   chipPlayer.load('click3.xm', function(buffer) {
     if (buffer) {
       xmReady = true;
@@ -959,11 +973,21 @@ function updateXMBtn() {
   const s1 = document.createElement('script');
   s1.src = 'libopenmpt.js';
   s1.onload = () => {
-    const s2 = document.createElement('script');
-    s2.src = 'chiptune2.js';
-    s2.onload = () => setTimeout(initXM, 300);
-    s2.onerror = () => console.warn('chiptune2.js no cargó');
-    document.head.appendChild(s2);
+    // Esperar a que libopenmpt termine de inicializarse
+    function waitForLibopenmpt(tries) {
+      if (typeof libopenmpt !== 'undefined' && libopenmpt._malloc) {
+        const s2 = document.createElement('script');
+        s2.src = 'chiptune2.js';
+        s2.onload = () => setTimeout(initXM, 300);
+        s2.onerror = () => console.warn('chiptune2.js no cargó');
+        document.head.appendChild(s2);
+      } else if (tries > 0) {
+        setTimeout(() => waitForLibopenmpt(tries - 1), 200);
+      } else {
+        console.warn('libopenmpt no inicializó');
+      }
+    }
+    waitForLibopenmpt(20);
   };
   s1.onerror = () => console.warn('libopenmpt.js no cargó');
   document.head.appendChild(s1);
