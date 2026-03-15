@@ -700,7 +700,7 @@ footer {
       <div class="link-icon">◉</div>
       <div class="link-platform">Email</div>
       <div class="link-handle">vamptecnologias</div>
-      <div class="link-desc">vamptecnologias@outlook.com</div>
+      <div class="link-desc"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="99eff8f4e9edfcfaf7f6f5f6fef0f8ead9f6ecedf5f6f6f2b7faf6f4">[email&#160;protected]</a></div>
     </div>
 
     <a href="https://www.youtube.com/@vampistack" target="_blank" class="link-card">
@@ -722,7 +722,7 @@ footer {
 <!-- ================================================================
      MUSIC ENGINE — mismo synth de vampichoco.syn
 ================================================================ -->
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ── SYNTH ──────────────────────────────────────────────────────
 const SR=44100,TAU=Math.PI*2,BPM=142;
 const SPB=SR*60/BPM,SP8=SPB/2,SP16=SPB/4;
@@ -875,128 +875,58 @@ draw();
 const dot=document.getElementById('cursorDot');
 document.addEventListener('mousemove',e=>{dot.style.left=e.clientX+'px';dot.style.top=e.clientY+'px';});
 
-// Iniciar XM en primer click (requerimiento del navegador)
-document.addEventListener('click', function startXMOnce() {
-  startXM();
-  document.removeEventListener('click', startXMOnce);
-}, {once: true});
-
 // ── SCROLL REVEAL ──────────────────────────────────────────────
 const observer=new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
 },{threshold:.15});
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 
-// ── XM BACKGROUND PLAYER ───────────────────────────────────────
-// Usa chiptune2.js cargado desde CDN
-let chipPlayer = null;
-let xmMuted = false;
-let xmReady = false;
-let xmStarted = false;
+// ── MP3 BACKGROUND PLAYER ──────────────────────────────────────
+const bgAudio = new Audio('click3.mp3');
+bgAudio.loop = true;
+bgAudio.volume = 0.3;
+let bgMuted = false;
+let bgStarted = false;
 
-function initXM() {
-  if (typeof ChiptuneJsPlayer === 'undefined') return;
-  const config = new ChiptuneJsConfig();
-  config.repeatCount = -1;
-  config.stereoSeparation = 70;
-  config.interpolationFilter = 4;
-  chipPlayer = new ChiptuneJsPlayer(config);
-  // NO autoplay — esperar click del usuario
-  xmReady = false;
+function startBG() {
+  if (bgStarted) return;
+  bgStarted = true;
+  bgAudio.play().catch(()=>{});
+  updateBGBtn();
 }
 
-function startXM() {
-  if (!chipPlayer || xmStarted) return;
-  xmStarted = true;
-  chipPlayer.load('click3.xm', function(buffer) {
-    if (buffer) {
-      xmReady = true;
-      chipPlayer.play(buffer);
-      updateXMBtn();
-    }
-  });
+function toggleBGMute() {
+  bgMuted = !bgMuted;
+  bgAudio.volume = bgMuted ? 0 : 0.3;
+  updateBGBtn();
 }
 
-// Muteamos el XM cuando el synth toca y viceversa
-// Sin redefinir pStart/pStop — usamos el gainNode del XM directamente
-function xmSetVolume(vol) {
-  if (!chipPlayer || !xmReady) return;
-  if (chipPlayer.currentPlayingNode) {
-    chipPlayer.currentPlayingNode.disconnect();
-    if (vol > 0) chipPlayer.currentPlayingNode.connect(chipPlayer.context.destination);
-  }
+function updateBGBtn() {
+  const btn = document.getElementById('bgBtn');
+  if (!btn) return;
+  btn.textContent = bgMuted ? '♪ BGM OFF' : '♫ BGM ON';
+  btn.style.color = bgMuted ? 'var(--dimtxt)' : 'var(--green)';
+  btn.style.borderColor = bgMuted ? 'var(--dimtxt)' : 'var(--green)';
 }
 
-// Hook sobre pToggle para coordinar XM
+// Coordinar con el synth player
 window.pToggle = () => {
-  if (playing) {
-    pStop();
-    if (!xmMuted && chipPlayer && xmReady && chipPlayer.currentPlayingNode)
-      chipPlayer.currentPlayingNode.connect(chipPlayer.context.destination);
-  } else {
-    pStart();
-    if (chipPlayer && xmReady && chipPlayer.currentPlayingNode)
-      chipPlayer.currentPlayingNode.disconnect();
-  }
+  if (playing) { pStop(); if (!bgMuted) { bgAudio.volume=0.3; } }
+  else { pStart(); bgAudio.volume=0; }
 };
-
 window.pRestart = () => {
   pStop(); globalT=0; ksInit(55); scGain=1; prevBeatKS=-1;
-  setTimeout(()=>{
-    pStart();
-    if (chipPlayer && xmReady && chipPlayer.currentPlayingNode)
-      chipPlayer.currentPlayingNode.disconnect();
-  }, 80);
+  bgAudio.volume=0;
+  setTimeout(pStart, 80);
 };
 
-function toggleXMMute() {
-  if (!chipPlayer || !xmReady) return;
-  xmMuted = !xmMuted;
-  if (xmMuted) {
-    chipPlayer.setVolume(0);
-  } else {
-    if (!playing) chipPlayer.setVolume(64);
-  }
-  updateXMBtn();
-}
-
-function updateXMBtn() {
-  const btn = document.getElementById('xmMuteBtn');
-  if (!btn) return;
-  btn.textContent = xmMuted ? '♪ BGM OFF' : '♫ BGM ON';
-  btn.style.color = xmMuted ? 'var(--dimtxt)' : 'var(--green)';
-  btn.style.borderColor = xmMuted ? 'var(--dimtxt)' : 'var(--green)';
-}
-
-// Cargar libopenmpt.js y chiptune2.js locales
-(function loadChiptune() {
-  const s1 = document.createElement('script');
-  s1.src = 'libopenmpt.js';
-  s1.onload = () => {
-    // Esperar a que libopenmpt termine de inicializarse
-    function waitForLibopenmpt(tries) {
-      if (typeof libopenmpt !== 'undefined' && libopenmpt._malloc) {
-        const s2 = document.createElement('script');
-        s2.src = 'chiptune2.js';
-        s2.onload = () => setTimeout(initXM, 300);
-        s2.onerror = () => console.warn('chiptune2.js no cargó');
-        document.head.appendChild(s2);
-      } else if (tries > 0) {
-        setTimeout(() => waitForLibopenmpt(tries - 1), 200);
-      } else {
-        console.warn('libopenmpt no inicializó');
-      }
-    }
-    waitForLibopenmpt(20);
-  };
-  s1.onerror = () => console.warn('libopenmpt.js no cargó');
-  document.head.appendChild(s1);
-})();
+// Arrancar con primer click
+document.addEventListener('click', startBG, {once:true});
 </script>
 
-<!-- XM Mute Button -->
+<!-- BGM Button -->
 <div style="position:fixed;bottom:20px;right:20px;z-index:600;">
-  <button id="xmMuteBtn" onclick="toggleXMMute()"
+  <button id="bgBtn" onclick="toggleBGMute()"
     style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;
     padding:8px 16px;background:rgba(4,4,15,0.9);cursor:crosshair;
     border:1px solid var(--green);color:var(--green);
