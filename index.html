@@ -904,28 +904,36 @@ function initXM() {
 }
 
 // Muteamos el XM cuando el synth toca y viceversa
-const _origPStart = window.pStart || null;
-const _pStartOrig = pStart;
-function pStart() {
-  _pStartOrig();
-  // Mutear XM cuando empieza el synth
-  if (chipPlayer && xmReady) {
-    chipPlayer.setVolume(0);
+// Sin redefinir pStart/pStop — usamos el gainNode del XM directamente
+function xmSetVolume(vol) {
+  if (!chipPlayer || !xmReady) return;
+  if (chipPlayer.currentPlayingNode) {
+    chipPlayer.currentPlayingNode.disconnect();
+    if (vol > 0) chipPlayer.currentPlayingNode.connect(chipPlayer.context.destination);
   }
 }
 
-const _pStopOrig = pStop;
-function pStop() {
-  _pStopOrig();
-  // Restaurar XM cuando para el synth
-  if (chipPlayer && xmReady && !xmMuted) {
-    chipPlayer.setVolume(64);
+// Hook sobre pToggle para coordinar XM
+window.pToggle = () => {
+  if (playing) {
+    pStop();
+    if (!xmMuted && chipPlayer && xmReady && chipPlayer.currentPlayingNode)
+      chipPlayer.currentPlayingNode.connect(chipPlayer.context.destination);
+  } else {
+    pStart();
+    if (chipPlayer && xmReady && chipPlayer.currentPlayingNode)
+      chipPlayer.currentPlayingNode.disconnect();
   }
-}
+};
 
-// Sobreescribir los toggles globales
-window.pToggle = () => playing ? pStop() : pStart();
-window.pRestart = () => { pStop(); globalT=0; ksInit(55); scGain=1; prevBeatKS=-1; setTimeout(pStart,80); };
+window.pRestart = () => {
+  pStop(); globalT=0; ksInit(55); scGain=1; prevBeatKS=-1;
+  setTimeout(()=>{
+    pStart();
+    if (chipPlayer && xmReady && chipPlayer.currentPlayingNode)
+      chipPlayer.currentPlayingNode.disconnect();
+  }, 80);
+};
 
 function toggleXMMute() {
   if (!chipPlayer || !xmReady) return;
