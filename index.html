@@ -884,7 +884,7 @@ document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 // ── MP3 BACKGROUND PLAYER ──────────────────────────────────────
 const bgAudio = new Audio('click3.mp3');
 bgAudio.loop = true;
-bgAudio.volume = 0.3;
+bgAudio.volume = 0.5;
 let bgMuted = false;
 let bgStarted = false;
 
@@ -897,7 +897,7 @@ function startBG() {
 
 function toggleBGMute() {
   bgMuted = !bgMuted;
-  bgAudio.volume = bgMuted ? 0 : 0.3;
+  bgAudio.volume = bgMuted ? 0 : 0.5;
   updateBGBtn();
 }
 
@@ -911,7 +911,7 @@ function updateBGBtn() {
 
 // Coordinar con el synth player
 window.pToggle = () => {
-  if (playing) { pStop(); if (!bgMuted) { bgAudio.volume=0.3; } }
+  if (playing) { pStop(); if (!bgMuted) { bgAudio.volume=0.5; } }
   else { pStart(); bgAudio.volume=0; }
 };
 window.pRestart = () => {
