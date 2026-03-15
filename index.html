@@ -880,6 +880,98 @@ const observer=new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
 },{threshold:.15});
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+// ── XM BACKGROUND PLAYER ───────────────────────────────────────
+// Usa chiptune2.js cargado desde CDN
+let chipPlayer = null;
+let xmMuted = false;
+let xmReady = false;
+
+function initXM() {
+  if (typeof ChiptuneJsPlayer === 'undefined') return;
+  const config = new ChiptuneJsConfig();
+  config.repeatCount = -1; // loop infinito
+  config.volume = 64;      // volumen medio (0-128)
+  chipPlayer = new ChiptuneJsPlayer(config);
+
+  chipPlayer.load('click3.xm', function(buffer) {
+    if (buffer) {
+      xmReady = true;
+      chipPlayer.play(buffer);
+      updateXMBtn();
+    }
+  });
+}
+
+// Muteamos el XM cuando el synth toca y viceversa
+const _origPStart = window.pStart || null;
+const _pStartOrig = pStart;
+function pStart() {
+  _pStartOrig();
+  // Mutear XM cuando empieza el synth
+  if (chipPlayer && xmReady) {
+    chipPlayer.setVolume(0);
+  }
+}
+
+const _pStopOrig = pStop;
+function pStop() {
+  _pStopOrig();
+  // Restaurar XM cuando para el synth
+  if (chipPlayer && xmReady && !xmMuted) {
+    chipPlayer.setVolume(64);
+  }
+}
+
+// Sobreescribir los toggles globales
+window.pToggle = () => playing ? pStop() : pStart();
+window.pRestart = () => { pStop(); globalT=0; ksInit(55); scGain=1; prevBeatKS=-1; setTimeout(pStart,80); };
+
+function toggleXMMute() {
+  if (!chipPlayer || !xmReady) return;
+  xmMuted = !xmMuted;
+  if (xmMuted) {
+    chipPlayer.setVolume(0);
+  } else {
+    if (!playing) chipPlayer.setVolume(64);
+  }
+  updateXMBtn();
+}
+
+function updateXMBtn() {
+  const btn = document.getElementById('xmMuteBtn');
+  if (!btn) return;
+  btn.textContent = xmMuted ? '♪ BGM OFF' : '♫ BGM ON';
+  btn.style.color = xmMuted ? 'var(--dimtxt)' : 'var(--green)';
+  btn.style.borderColor = xmMuted ? 'var(--dimtxt)' : 'var(--green)';
+}
+
+// Cargar libopenmpt.js y chiptune2.js locales
+(function loadChiptune() {
+  const s1 = document.createElement('script');
+  s1.src = 'libopenmpt.js';
+  s1.onload = () => {
+    const s2 = document.createElement('script');
+    s2.src = 'chiptune2.js';
+    s2.onload = () => setTimeout(initXM, 300);
+    s2.onerror = () => console.warn('chiptune2.js no cargó');
+    document.head.appendChild(s2);
+  };
+  s1.onerror = () => console.warn('libopenmpt.js no cargó');
+  document.head.appendChild(s1);
+})();
 </script>
+
+<!-- XM Mute Button -->
+<div style="position:fixed;bottom:20px;right:20px;z-index:600;">
+  <button id="xmMuteBtn" onclick="toggleXMMute()"
+    style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;
+    padding:8px 16px;background:rgba(4,4,15,0.9);cursor:crosshair;
+    border:1px solid var(--green);color:var(--green);
+    backdrop-filter:blur(8px);transition:all .2s;">
+    ♫ BGM ON
+  </button>
+</div>
+
 </body>
 </html>
